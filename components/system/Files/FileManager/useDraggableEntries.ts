@@ -7,10 +7,12 @@ import {
   getHtmlToImage,
   getMimeType,
   haltEvent,
+  shouldCaptureDragImage,
   trimCanvasToTopLeft,
   updateIconPositions,
 } from "utils/functions";
 import { useFileSystem } from "contexts/fileSystem";
+import { TRANSITIONS_IN_MILLISECONDS } from "utils/constants";
 
 type DraggableEntryProps = {
   draggable: boolean;
@@ -36,7 +38,8 @@ const useDraggableEntries = (
   { focusEntry }: FocusEntryFunctions,
   fileManagerRef: React.RefObject<HTMLOListElement | null>,
   isSelecting: boolean,
-  allowMoving?: boolean
+  allowMoving?: boolean,
+  isDesktop?: boolean
 ): DraggableEntry => {
   const [dropIndex, setDropIndex] = useState(-1);
   const { exists } = useFileSystem();
@@ -48,127 +51,14 @@ const useDraggableEntries = (
   const dragPositionRef = useRef<DragPosition>(
     Object.create(null) as DragPosition
   );
-  const onDragging = ({ clientX: x, clientY: y }: DragEvent): void => {
-    dragPositionRef.current = { ...dragPositionRef.current, x, y };
-  };
+  const onDragging = useCallback(
+    ({ clientX: x, clientY: y }: DragEvent): void => {
+      dragPositionRef.current = { ...dragPositionRef.current, x, y };
+    },
+    []
+  );
   const isMainContainer =
     fileManagerRef.current?.parentElement?.tagName === "MAIN";
-  const onDragEnd =
-    (entryUrl: string): React.DragEventHandler =>
-    (event) => {
-      haltEvent(event);
-
-      if (allowMoving && focusedEntries.length > 0) {
-        updateIconPositions(
-          entryUrl,
-          fileManagerRef.current,
-          iconPositions,
-          sortOrders,
-          dragPositionRef.current,
-          focusedEntries,
-          setIconPositions,
-          exists
-        );
-        fileManagerRef.current?.removeEventListener("dragover", onDragging);
-      } else if (dropIndex !== -1) {
-        setSortOrder(entryUrl, (currentSortOrders) => {
-          const sortedEntries = currentSortOrders.filter(
-            (entry) => !focusedEntries.includes(entry)
-          );
-
-          sortedEntries.splice(dropIndex, 0, ...focusedEntries);
-
-          return sortedEntries;
-        });
-      }
-    };
-  const onDragOver =
-    (file: string): React.DragEventHandler =>
-    ({ target }) => {
-      if (!allowMoving && target instanceof HTMLLIElement) {
-        const { children = [] } = target.parentElement || {};
-        const dragOverFocused = focusedEntries.includes(file);
-
-        setDropIndex(dragOverFocused ? -1 : [...children].indexOf(target));
-      }
-    };
-  const onDragStart =
-    (
-      entryUrl: string,
-      file: string,
-      renaming: boolean
-    ): React.DragEventHandler =>
-    (event) => {
-      if (renaming || "ontouchstart" in window) {
-        haltEvent(event);
-        return;
-      }
-
-      focusEntry(file);
-
-      const singleFile = focusedEntries.length <= 1;
-
-      event.nativeEvent.dataTransfer?.setData(
-        "application/json",
-        JSON.stringify(
-          singleFile
-            ? [join(entryUrl, file)]
-            : focusedEntries.map((entryFile) => join(entryUrl, entryFile))
-        )
-      );
-
-      if (singleFile) {
-        event.nativeEvent.dataTransfer?.setData(
-          "DownloadURL",
-          `${getMimeType(file) || "application/octet-stream"}:${file}:${
-            window.location.href
-          }${join(entryUrl, file)}`
-        );
-      }
-
-      if (!singleFile && dragImageRef.current) {
-        if (!adjustedCaptureOffsetRef.current) {
-          adjustedCaptureOffsetRef.current = true;
-
-          const hasCapturedImageOffset =
-            capturedImageOffset.current.x || capturedImageOffset.current.y;
-
-          capturedImageOffset.current = {
-            x: hasCapturedImageOffset
-              ? event.nativeEvent.clientX - capturedImageOffset.current.x
-              : event.nativeEvent.offsetX,
-            y: hasCapturedImageOffset
-              ? event.nativeEvent.clientY - capturedImageOffset.current.y
-              : event.nativeEvent.offsetY + FILE_MANAGER_TOP_PADDING,
-          };
-        }
-
-        event.nativeEvent.dataTransfer?.setDragImage(
-          dragImageRef.current,
-          isMainContainer
-            ? capturedImageOffset.current.x
-            : event.nativeEvent.offsetX,
-          isMainContainer
-            ? capturedImageOffset.current.y
-            : event.nativeEvent.offsetY
-        );
-      }
-
-      Object.assign(event.dataTransfer, { effectAllowed: "move" });
-
-      if (allowMoving) {
-        dragPositionRef.current =
-          focusedEntries.length > 1
-            ? {
-                offsetX: event.nativeEvent.offsetX,
-                offsetY: event.nativeEvent.offsetY,
-              }
-            : (Object.create(null) as DragPosition);
-        fileManagerRef.current?.addEventListener("dragover", onDragging, {
-          passive: true,
-        });
-      }
-    };
   const updateDragImage = useCallback(async () => {
     if (fileManagerRef.current) {
       const focusedElements = [
@@ -177,7 +67,7 @@ const useDraggableEntries = (
         ),
       ];
 
-      if (focusedElements.length > 1) {
+      if (shouldCaptureDragImage(focusedElements.length, isDesktop)) {
         if (dragImageRef.current) dragImageRef.current.src = "";
         else dragImageRef.current = new Image();
 
@@ -218,14 +108,171 @@ const useDraggableEntries = (
         }
       }
     }
-  }, [fileManagerRef]);
+  }, [fileManagerRef, isDesktop]);
+  const onDragEnd = useCallback(
+    (entryUrl: string): React.DragEventHandler =>
+      (event) => {
+        haltEvent(event);
+
+        if (allowMoving && focusedEntries.length > 0) {
+          updateIconPositions(
+            entryUrl,
+            fileManagerRef.current,
+            iconPositions,
+            sortOrders,
+            dragPositionRef.current,
+            focusedEntries,
+            setIconPositions,
+            exists
+          );
+
+          fileManagerRef.current?.removeEventListener("dragover", onDragging);
+
+          setTimeout(() => {
+            adjustedCaptureOffsetRef.current = false;
+            updateDragImage();
+          }, TRANSITIONS_IN_MILLISECONDS.MOUSE_IN_OUT / 2);
+        } else if (dropIndex !== -1) {
+          setSortOrder(entryUrl, (currentSortOrders) => {
+            const sortedEntries = currentSortOrders.filter(
+              (entry) => !focusedEntries.includes(entry)
+            );
+
+            sortedEntries.splice(dropIndex, 0, ...focusedEntries);
+
+            return sortedEntries;
+          });
+        }
+      },
+    [
+      allowMoving,
+      dropIndex,
+      exists,
+      fileManagerRef,
+      focusedEntries,
+      iconPositions,
+      onDragging,
+      setIconPositions,
+      setSortOrder,
+      sortOrders,
+      updateDragImage,
+    ]
+  );
+  const onDragOver = useCallback(
+    (file: string): React.DragEventHandler =>
+      ({ target }) => {
+        if (!allowMoving && target instanceof HTMLLIElement) {
+          const { children = [] } = target.parentElement || {};
+          const dragOverFocused = focusedEntries.includes(file);
+
+          setDropIndex(dragOverFocused ? -1 : [...children].indexOf(target));
+        }
+      },
+    [allowMoving, focusedEntries]
+  );
+  const onDragStart = useCallback(
+    (
+      entryUrl: string,
+      file: string,
+      renaming: boolean
+    ): React.DragEventHandler =>
+      (event) => {
+        if (renaming || "ontouchstart" in window) {
+          haltEvent(event);
+          return;
+        }
+
+        focusEntry(file);
+
+        const singleFile = focusedEntries.length <= 1;
+
+        event.nativeEvent.dataTransfer?.setData(
+          "application/json",
+          JSON.stringify(
+            singleFile
+              ? [join(entryUrl, file)]
+              : focusedEntries.map((entryFile) => join(entryUrl, entryFile))
+          )
+        );
+
+        if (singleFile) {
+          event.nativeEvent.dataTransfer?.setData(
+            "DownloadURL",
+            `${getMimeType(file) || "application/octet-stream"}:${file}:${
+              window.location.href
+            }${join(entryUrl, file)}`
+          );
+        }
+
+        if (
+          dragImageRef.current &&
+          shouldCaptureDragImage(focusedEntries.length, isDesktop)
+        ) {
+          if (!adjustedCaptureOffsetRef.current) {
+            adjustedCaptureOffsetRef.current = true;
+
+            const hasCapturedImageOffset =
+              capturedImageOffset.current.x || capturedImageOffset.current.y;
+
+            capturedImageOffset.current = {
+              x: hasCapturedImageOffset
+                ? event.nativeEvent.clientX - capturedImageOffset.current.x
+                : event.nativeEvent.offsetX,
+              y: hasCapturedImageOffset
+                ? event.nativeEvent.clientY - capturedImageOffset.current.y
+                : event.nativeEvent.offsetY + FILE_MANAGER_TOP_PADDING,
+            };
+          }
+
+          event.nativeEvent.dataTransfer?.setDragImage(
+            dragImageRef.current,
+            isMainContainer
+              ? capturedImageOffset.current.x
+              : event.nativeEvent.offsetX,
+            isMainContainer
+              ? capturedImageOffset.current.y
+              : event.nativeEvent.offsetY
+          );
+        }
+
+        Object.assign(event.dataTransfer, { effectAllowed: "move" });
+
+        if (allowMoving) {
+          dragPositionRef.current = shouldCaptureDragImage(
+            focusedEntries.length,
+            isDesktop
+          )
+            ? {
+                offsetX: event.nativeEvent.offsetX,
+                offsetY: event.nativeEvent.offsetY,
+              }
+            : (Object.create(null) as DragPosition);
+          fileManagerRef.current?.addEventListener("dragover", onDragging, {
+            passive: true,
+          });
+        }
+      },
+    [
+      allowMoving,
+      fileManagerRef,
+      focusEntry,
+      focusedEntries,
+      isDesktop,
+      isMainContainer,
+      onDragging,
+    ]
+  );
 
   useEffect(() => {
-    if (!isSelecting && focusedEntries.length > 1) updateDragImage();
-    else if (focusedEntries.length === 0) {
+    if (
+      !isSelecting &&
+      shouldCaptureDragImage(focusedEntries.length, isDesktop)
+    ) {
+      updateDragImage();
+    } else if (focusedEntries.length === 0) {
       adjustedCaptureOffsetRef.current = false;
     }
-  }, [focusedEntries, isSelecting, updateDragImage]);
+  }, [focusedEntries, isDesktop, isSelecting, updateDragImage]);
 
   return (entryUrl: string, file: string, renaming: boolean) => ({
     draggable: true,

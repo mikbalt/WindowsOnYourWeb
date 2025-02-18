@@ -2,7 +2,7 @@ import { basename } from "path";
 import { useCallback, useEffect, useRef } from "react";
 import { type ContainerHookProps } from "components/system/Apps/AppContainer";
 import { useProcesses } from "contexts/process";
-import { bufferToUrl, loadFiles } from "utils/functions";
+import { bufferToUrl, haltEvent, loadFiles } from "utils/functions";
 import { useFileSystem } from "contexts/fileSystem";
 import useTitle from "components/system/Window/useTitle";
 import useIsolatedContentWindow from "hooks/useIsolatedContentWindow";
@@ -13,7 +13,8 @@ const useTic80 = ({
   setLoading,
   url,
 }: ContainerHookProps): void => {
-  const { processes: { [id]: { libs = [] } = {} } = {} } = useProcesses();
+  const { processes: { [id]: { closing, libs = [] } = {} } = {} } =
+    useProcesses();
   const { readFile } = useFileSystem();
   const loadedUrl = useRef<string>(undefined);
   const { appendFileToTitle } = useTitle(id);
@@ -34,11 +35,15 @@ const useTic80 = ({
         loadedUrl.current = url;
         setLoading(true);
 
+        const canvas = contentWindow.document.querySelector(
+          "#canvas"
+        ) as HTMLCanvasElement;
+
+        canvas.addEventListener("contextmenu", haltEvent);
+
         contentWindow.Module = {
           arguments: blobUrl ? [blobUrl] : undefined,
-          canvas: contentWindow.document.querySelector(
-            "#canvas"
-          ) as HTMLCanvasElement,
+          canvas,
           postRun: () => setLoading(false),
         };
 
@@ -53,8 +58,8 @@ const useTic80 = ({
   );
 
   useEffect(() => {
-    if (url !== loadedUrl.current) loadComputer(url);
-  }, [loadComputer, url]);
+    if (url !== loadedUrl.current && !closing) loadComputer(url);
+  }, [closing, loadComputer, url]);
 };
 
 export default useTic80;

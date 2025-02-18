@@ -45,13 +45,16 @@ import {
   VIDEO_DECODE_FORMATS,
   VIDEO_ENCODE_FORMATS,
 } from "utils/ffmpeg/formats";
-import { type FFmpegTranscodeFile } from "utils/ffmpeg/types";
-import { getExtension, isSafari, isYouTubeUrl } from "utils/functions";
+import {
+  getExtension,
+  isSafari,
+  isYouTubeUrl,
+  saveUnpositionedDesktopIcons,
+} from "utils/functions";
 import {
   IMAGE_DECODE_FORMATS,
   IMAGE_ENCODE_FORMATS,
 } from "utils/imagemagick/formats";
-import { type ImageMagickConvertFile } from "utils/imagemagick/types";
 import { Share } from "components/system/Menu/MenuIcons";
 import { useWindowAI } from "hooks/useWindowAI";
 import { getNavButtonByTitle } from "hooks/useGlobalKeyboardShortcuts";
@@ -59,6 +62,9 @@ import {
   AI_DISPLAY_TITLE,
   AI_STAGE,
 } from "components/system/Taskbar/AI/constants";
+import useTransferDialog, {
+  type ObjectReader,
+} from "components/system/Dialogs/Transfer/useTransferDialog";
 
 const { alias } = PACKAGE_DATA;
 
@@ -80,17 +86,21 @@ const useFileContextMenu = (
   fileManagerId?: string,
   readOnly?: boolean
 ): ContextMenuCapture => {
-  const { minimize, open, url: changeUrl } = useProcesses();
+  const { close, minimize, open, url: changeUrl } = useProcesses();
   const processesRef = useProcessesRef();
   const {
     aiEnabled,
     setCursor,
     setForegroundId,
+    setIconPositions,
     setWallpaper,
     updateRecentFiles,
   } = useSession();
   const baseName = basename(path);
-  const isFocusedEntry = focusedEntries.includes(baseName);
+  const isFocusedEntry = useMemo(
+    () => focusedEntries.includes(baseName),
+    [baseName, focusedEntries]
+  );
   const openFile = useFile(url, path);
   const {
     copyEntries,
@@ -105,6 +115,7 @@ const useFileContextMenu = (
   } = useFileSystem();
   const { contextMenu } = useMenu();
   const hasWindowAI = useWindowAI();
+  const { openTransferDialog } = useTransferDialog();
   const { onContextMenuCapture, ...contextMenuHandlers } = useMemo(
     () =>
       contextMenu?.(() => {
@@ -163,8 +174,13 @@ const useFileContextMenu = (
 
           menuItems.push(
             {
-              action: () =>
-                absoluteEntries().forEach((entry) => deleteLocalPath(entry)),
+              action: () => {
+                if (dirname(path) === DESKTOP_PATH) {
+                  saveUnpositionedDesktopIcons(setIconPositions);
+                }
+
+                absoluteEntries().forEach((entry) => deleteLocalPath(entry));
+              },
               label: "Delete",
             },
             { action: () => setRenaming(baseName), label: "Rename" },
@@ -268,44 +284,71 @@ const useFileContextMenu = (
 
                     return {
                       action: async () => {
-                        const transcodeFiles: (
-                          | FFmpegTranscodeFile
-                          | ImageMagickConvertFile
-                        )[] = await Promise.all(
-                          absoluteEntries().map(async (absoluteEntry) => [
-                            absoluteEntry,
-                            await readFile(absoluteEntry),
-                          ])
-                        );
-                        const transcodeFunction = isAudioVideo
-                          ? (await import("utils/ffmpeg")).transcode
-                          : (await import("utils/imagemagick")).convert;
-                        const transcodedFiles = await transcodeFunction(
-                          transcodeFiles,
-                          extension
-                        );
+                        openTransferDialog(undefined, path, "Converting");
 
-                        await Promise.all(
-                          transcodedFiles.map(
-                            async ([
-                              transcodedFileName,
-                              transcodedFileData,
-                            ]) => {
-                              const baseTranscodedName =
-                                basename(transcodedFileName);
-                              const transcodedDirName = dirname(path);
+                        const directory = dirname(path);
+                        const closeDialog = (): void =>
+                          close(`Transfer${PROCESS_DELIMITER}${path}`);
 
-                              updateFolder(
-                                transcodedDirName,
-                                await createPath(
-                                  baseTranscodedName,
-                                  transcodedDirName,
-                                  transcodedFileData
-                                )
-                              );
-                            }
-                          )
-                        );
+                        try {
+                          const transcodeFunction = isAudioVideo
+                            ? (await import("utils/ffmpeg")).transcode
+                            : (await import("utils/imagemagick")).convert;
+                          const objectReaders =
+                            absoluteEntries().map<ObjectReader>(
+                              (absoluteEntry) => {
+                                let aborted = false;
+
+                                return {
+                                  abort: () => {
+                                    aborted = true;
+                                  },
+                                  directory,
+                                  name: basename(absoluteEntry),
+                                  operation: "Converting",
+                                  read: async () => {
+                                    if (aborted) return;
+
+                                    try {
+                                      const [
+                                        [
+                                          transcodedFileName,
+                                          transcodedFileData,
+                                        ],
+                                      ] = await transcodeFunction(
+                                        [
+                                          [
+                                            absoluteEntry,
+                                            await readFile(absoluteEntry),
+                                          ],
+                                        ],
+                                        extension
+                                      );
+
+                                      updateFolder(
+                                        directory,
+                                        await createPath(
+                                          basename(transcodedFileName),
+                                          directory,
+                                          transcodedFileData
+                                        )
+                                      );
+                                    } catch {
+                                      // Ignore failure to transcode
+                                    }
+                                  },
+                                };
+                              }
+                            );
+
+                          openTransferDialog(objectReaders, path);
+                        } catch (error) {
+                          closeDialog();
+
+                          if ("message" in (error as Error)) {
+                            console.error((error as Error).message);
+                          }
+                        }
                       },
                       label: extension.toUpperCase(),
                     };
@@ -649,6 +692,7 @@ const useFileContextMenu = (
       archiveFiles,
       baseName,
       changeUrl,
+      close,
       contextMenu,
       copyEntries,
       createPath,
@@ -666,6 +710,7 @@ const useFileContextMenu = (
       newShortcut,
       open,
       openFile,
+      openTransferDialog,
       path,
       pid,
       processesRef,
@@ -675,6 +720,7 @@ const useFileContextMenu = (
       rootFs?.mountList,
       setCursor,
       setForegroundId,
+      setIconPositions,
       setRenaming,
       setWallpaper,
       stats,

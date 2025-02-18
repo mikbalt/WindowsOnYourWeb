@@ -6,7 +6,7 @@ import { type EmscriptenFS } from "contexts/fileSystem/useAsyncFs";
 import { useProcesses } from "contexts/process";
 import { useSession } from "contexts/session";
 import { PREVENT_SCROLL, TRANSITIONS_IN_MILLISECONDS } from "utils/constants";
-import { loadFiles, pxToNum } from "utils/functions";
+import { haltEvent, loadFiles, pxToNum } from "utils/functions";
 import useIsolatedContentWindow from "hooks/useIsolatedContentWindow";
 
 declare global {
@@ -34,7 +34,8 @@ const useQuake3 = ({
   setLoading,
   loading,
 }: ContainerHookProps): void => {
-  const { processes: { [id]: process } = {} } = useProcesses();
+  const { closeWithTransition, processes: { [id]: process } = {} } =
+    useProcesses();
   const {
     componentWindow = undefined,
     defaultSize = {
@@ -86,13 +87,41 @@ const useQuake3 = ({
           newContentWindow.ioq3.elementPointerLock = true;
           newContentWindow.ioq3.callMain([]);
 
+          (newContentWindow as Window & { console: Console }).console.log = (
+            message: string
+          ) => {
+            if (message.startsWith("SDL_Quit called")) closeWithTransition(id);
+          };
+
           setLoading(false);
-          mountEmFs(window.FS as EmscriptenFS, "Quake3");
-          setContentWindow(newContentWindow);
+
+          const initCanvas = (): void => {
+            if (newContentWindow.ioq3?.canvas) {
+              newContentWindow.ioq3.canvas.addEventListener(
+                "contextmenu",
+                haltEvent
+              );
+
+              setContentWindow(newContentWindow);
+              mountEmFs(newContentWindow.FS as EmscriptenFS, id);
+            } else {
+              requestAnimationFrame(initCanvas);
+            }
+          };
+
+          initCanvas();
         }
       );
     }
-  }, [getContentWindow, libs, loading, mountEmFs, setLoading]);
+  }, [
+    closeWithTransition,
+    getContentWindow,
+    id,
+    libs,
+    loading,
+    mountEmFs,
+    setLoading,
+  ]);
 
   useEffect(() => {
     if (!contentWindow?.ioq3) return;
@@ -133,7 +162,7 @@ const useQuake3 = ({
     );
   }, [
     componentWindow,
-    contentWindow,
+    contentWindow?.ioq3,
     defaultSize,
     maximized,
     size,
@@ -150,7 +179,7 @@ const useQuake3 = ({
 
       contentWindow?.AL?.contexts.forEach(({ ctx }) => ctx.close());
     },
-    [contentWindow]
+    [contentWindow?.AL?.contexts, contentWindow?.ioq3]
   );
 };
 

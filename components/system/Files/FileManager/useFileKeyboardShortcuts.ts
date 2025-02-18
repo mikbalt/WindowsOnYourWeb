@@ -11,8 +11,16 @@ import { type FileManagerViewNames } from "components/system/Files/Views";
 import { useFileSystem } from "contexts/fileSystem";
 import { useProcesses } from "contexts/process";
 import { useSession } from "contexts/session";
-import { DESKTOP_PATH, PREVENT_SCROLL } from "utils/constants";
-import { haltEvent, sendMouseClick } from "utils/functions";
+import {
+  DESKTOP_PATH,
+  PREVENT_SCROLL,
+  SHORTCUT_EXTENSION,
+} from "utils/constants";
+import {
+  haltEvent,
+  saveUnpositionedDesktopIcons,
+  sendMouseClick,
+} from "utils/functions";
 
 type KeyboardShortcutEntry = (file?: string) => React.KeyboardEventHandler;
 
@@ -26,18 +34,20 @@ const useFileKeyboardShortcuts = (
   updateFiles: (newFile?: string, oldFile?: string) => void,
   fileManagerRef: React.RefObject<HTMLOListElement | null>,
   id?: string,
-  view?: FileManagerViewNames
+  isStartMenu?: boolean,
+  isDesktop?: boolean,
+  setView?: (newView: FileManagerViewNames) => void
 ): KeyboardShortcutEntry => {
   const { copyEntries, deletePath, moveEntries } = useFileSystem();
-  const { url: changeUrl } = useProcesses();
+  const { open, url: changeUrl } = useProcesses();
   const { openTransferDialog } = useTransferDialog();
-  const { foregroundId } = useSession();
+  const { foregroundId, setIconPositions } = useSession();
 
   useEffect(() => {
     const pasteHandler = (event: ClipboardEvent): void => {
       if (
         event.clipboardData?.files?.length &&
-        ((!foregroundId && url === DESKTOP_PATH) || foregroundId === id)
+        ((!foregroundId && isDesktop) || foregroundId === id)
       ) {
         event.stopImmediatePropagation?.();
         createFileReaders(event.clipboardData.files, url, newPath).then(
@@ -49,16 +59,56 @@ const useFileKeyboardShortcuts = (
     document.addEventListener("paste", pasteHandler);
 
     return () => document.removeEventListener("paste", pasteHandler);
-  }, [foregroundId, id, newPath, openTransferDialog, url]);
+  }, [foregroundId, id, isDesktop, newPath, openTransferDialog, url]);
 
   return useCallback(
     (file?: string): React.KeyboardEventHandler =>
       (event) => {
-        if (view === "list") return;
+        if (isStartMenu) return;
 
-        const { ctrlKey, key, target, shiftKey } = event;
+        const { altKey, ctrlKey, key, target, shiftKey } = event;
 
-        if (shiftKey) return;
+        if (shiftKey) {
+          if (ctrlKey && !isDesktop) {
+            const updateViewAndFocus = (
+              newView: FileManagerViewNames
+            ): void => {
+              setView?.(newView);
+              requestAnimationFrame(() =>
+                fileManagerRef.current?.focus(PREVENT_SCROLL)
+              );
+            };
+
+            // eslint-disable-next-line default-case
+            switch (key) {
+              case "#": // 3
+                updateViewAndFocus("icon");
+                break;
+              case "^": // 6
+                updateViewAndFocus("details");
+                break;
+            }
+          }
+
+          return;
+        }
+
+        const onDelete = (): void => {
+          if (focusedEntries.length > 0) {
+            haltEvent(event);
+
+            if (url === DESKTOP_PATH) {
+              saveUnpositionedDesktopIcons(setIconPositions);
+            }
+
+            focusedEntries.forEach(async (entry) => {
+              const path = join(url, entry);
+
+              if (await deletePath(path)) updateFiles(undefined, path);
+            });
+            blurEntry();
+          }
+        };
 
         if (ctrlKey) {
           const lKey = key.toLowerCase();
@@ -78,16 +128,33 @@ const useFileKeyboardShortcuts = (
               haltEvent(event);
               copyEntries(focusedEntries.map((entry) => join(url, entry)));
               break;
+            case "d":
+              onDelete();
+              break;
+            case "r":
+              haltEvent(event);
+              updateFiles();
+              break;
             case "x":
               haltEvent(event);
               moveEntries(focusedEntries.map((entry) => join(url, entry)));
               break;
             case "v":
-              haltEvent(event);
+              event.stopPropagation();
               if (target instanceof HTMLOListElement) {
                 pasteToFolder();
               }
               break;
+          }
+        } else if (altKey) {
+          const lKey = key.toLowerCase();
+
+          if (lKey === "n") {
+            haltEvent(event);
+            open("FileExplorer", { url });
+          } else if (key === "Enter" && focusedEntries.length > 0) {
+            haltEvent(event);
+            open("Properties", { url: join(url, focusedEntries[0]) });
           }
         } else {
           switch (key) {
@@ -104,15 +171,7 @@ const useFileKeyboardShortcuts = (
               }
               break;
             case "Delete":
-              if (focusedEntries.length > 0) {
-                haltEvent(event);
-                focusedEntries.forEach(async (entry) => {
-                  const path = join(url, entry);
-
-                  if (await deletePath(path)) updateFiles(undefined, path);
-                });
-                blurEntry();
-              }
+              onDelete();
               break;
             case "Backspace":
               if (id) {
@@ -218,7 +277,9 @@ const useFileKeyboardShortcuts = (
                   blurEntry();
                   focusEntry(focusOnEntry);
                   fileManagerRef.current
-                    ?.querySelector(`button[aria-label='${focusOnEntry}']`)
+                    ?.querySelector(
+                      `button[aria-label='${focusOnEntry.replace(SHORTCUT_EXTENSION, "")}']`
+                    )
                     ?.scrollIntoView();
                 }
               }
@@ -235,12 +296,16 @@ const useFileKeyboardShortcuts = (
       focusEntry,
       focusedEntries,
       id,
+      isDesktop,
+      isStartMenu,
       moveEntries,
+      open,
       pasteToFolder,
+      setIconPositions,
       setRenaming,
+      setView,
       updateFiles,
       url,
-      view,
     ]
   );
 };

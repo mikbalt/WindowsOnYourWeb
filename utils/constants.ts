@@ -164,7 +164,9 @@ export const MILLISECONDS_IN_MINUTE = 60000;
 
 export const MILLISECONDS_IN_DAY = 86400000;
 
-export const MOUNTABLE_EXTENSIONS = new Set([".iso", ".jsdos", ".wsz", ".zip"]);
+export const ZIP_EXTENSIONS = new Set([".jsdos", ".pk3", ".wsz", ".zip"]);
+
+export const MOUNTABLE_EXTENSIONS = new Set([".iso", ...ZIP_EXTENSIONS]);
 
 export const SPREADSHEET_FORMATS = [
   ".csv",
@@ -232,11 +234,21 @@ export const DEFAULT_INTERSECTION_OPTIONS: IntersectionObserverInit = {
   threshold: 0,
 };
 
-export const AUDIO_FILE_EXTENSIONS = new Set([".aac", ".oga", ".wav"]);
+export const AUDIO_FILE_EXTENSIONS = new Set([
+  ".aac",
+  ".flac",
+  ".m4a",
+  ".oga",
+  ".wav",
+]);
 
 export const AUDIO_PLAYLIST_EXTENSIONS = new Set([".asx", ".m3u", ".pls"]);
 
+export const DECODED_VIDEO_FILE_EXTENSIONS = new Set([".avi", ".divx"]);
+
 export const VIDEO_FILE_EXTENSIONS = new Set([
+  ".3gp",
+  ".f4v",
   ".m4v",
   ".mkv",
   ".mov",
@@ -333,6 +345,8 @@ export const SUPPORTED_ICON_PIXEL_RATIOS = [3, 2, 1];
 export const SUPPORTED_ICON_SIZES = [16, 32, 48, 96, 144];
 
 export const MAX_ICON_SIZE = 144;
+
+export const MAX_THUMBNAIL_FILE_SIZE = 1048576; // 1 MB
 
 export const DEFAULT_TEXT_FILE_SAVE_PATH = `${DESKTOP_PATH}/Untitled.txt`;
 

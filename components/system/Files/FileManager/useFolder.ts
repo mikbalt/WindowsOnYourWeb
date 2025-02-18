@@ -38,11 +38,14 @@ import {
   SHORTCUT_APPEND,
   SHORTCUT_EXTENSION,
   SYSTEM_SHORTCUT_DIRECTORIES,
+  ZIP_EXTENSIONS,
 } from "utils/constants";
 import {
   bufferToUrl,
   cleanUpBufferUrl,
   getExtension,
+  getIteratedNames,
+  saveUnpositionedDesktopIcons,
   updateIconPositions,
 } from "utils/functions";
 import { type CaptureTriggerEvent } from "contexts/menu/useMenuContextState";
@@ -93,6 +96,7 @@ type Folder = {
 type FolderFlags = {
   hideFolders?: boolean;
   hideLoading?: boolean;
+  isDesktop?: boolean;
   skipFsWatcher?: boolean;
   skipSorting?: boolean;
 };
@@ -103,7 +107,13 @@ const useFolder = (
   directory: string,
   setRenaming: React.Dispatch<React.SetStateAction<string>>,
   { blurEntry, focusEntry }: FocusEntryFunctions,
-  { hideFolders, hideLoading, skipFsWatcher, skipSorting }: FolderFlags
+  {
+    hideFolders,
+    hideLoading,
+    isDesktop,
+    skipFsWatcher,
+    skipSorting,
+  }: FolderFlags
 ): Folder => {
   const [files, setFiles] = useState<Files | typeof NO_FILES>();
   const [downloadLink, setDownloadLink] = useState("");
@@ -124,6 +134,7 @@ const useFolder = (
     readFile,
     removeFsWatcher,
     rename,
+    setPasteList,
     stat,
     updateFolder,
     writeFile,
@@ -294,20 +305,23 @@ const useFolder = (
     },
     [deletePath, directory, updateFolder]
   );
-  const createLink = (contents: Buffer, fileName?: string): void => {
-    const link = document.createElement("a");
+  const createLink = useCallback(
+    (contents: Buffer, fileName?: string): void => {
+      const link = document.createElement("a");
 
-    link.href = bufferToUrl(contents);
-    link.download = fileName
-      ? extname(fileName)
-        ? fileName
-        : `${fileName}.zip`
-      : "download.zip";
+      link.href = bufferToUrl(contents);
+      link.download = fileName
+        ? extname(fileName)
+          ? fileName
+          : `${fileName}.zip`
+        : "download.zip";
 
-    link.click();
+      link.click();
 
-    setDownloadLink(link.href);
-  };
+      setDownloadLink(link.href);
+    },
+    []
+  );
   const getFile = useCallback(
     async (path: string): Promise<ZipFile> => [
       relative(directory, path),
@@ -315,50 +329,55 @@ const useFolder = (
     ],
     [directory, readFile]
   );
-  const renameFile = async (path: string, name?: string): Promise<void> => {
-    let newName = removeInvalidFilenameCharacters(name).trim();
+  const renameFile = useCallback(
+    async (path: string, name?: string): Promise<void> => {
+      let newName = removeInvalidFilenameCharacters(name).trim();
 
-    if (newName?.endsWith(".")) {
-      newName = newName.slice(0, -1);
-    }
+      if (newName?.endsWith(".")) {
+        newName = newName.slice(0, -1);
+      }
 
-    if (newName) {
-      const renamedPath = join(
-        directory,
-        `${newName}${
-          path.endsWith(SHORTCUT_EXTENSION) ? SHORTCUT_EXTENSION : ""
-        }`
-      );
+      if (newName) {
+        const renamedPath = join(
+          directory,
+          `${newName}${
+            path.endsWith(SHORTCUT_EXTENSION) ? SHORTCUT_EXTENSION : ""
+          }`
+        );
 
-      if (!(await exists(renamedPath)) && (await rename(path, renamedPath))) {
-        if (dirname(path) === DESKTOP_PATH) {
-          setIconPositions((currentPositions) => ({
-            ...currentPositions,
-            ...(currentPositions[path]
-              ? { [renamedPath]: currentPositions[path] }
-              : undefined),
-          }));
+        if (!(await exists(renamedPath)) && (await rename(path, renamedPath))) {
+          if (isDesktop) {
+            saveUnpositionedDesktopIcons(setIconPositions);
 
-          await updateFolder(directory, renamedPath, path);
+            setIconPositions((currentPositions) => ({
+              ...currentPositions,
+              ...(currentPositions[path]
+                ? { [renamedPath]: currentPositions[path] }
+                : undefined),
+            }));
 
-          requestAnimationFrame(() =>
-            setIconPositions((currentPositions) => {
-              const { [path]: iconPosition, ...newPositions } =
-                currentPositions;
+            await updateFolder(directory, renamedPath, path);
 
-              if (iconPosition) {
-                newPositions[renamedPath] = iconPosition;
-              }
+            requestAnimationFrame(() =>
+              setIconPositions((currentPositions) => {
+                const { [path]: iconPosition, ...newPositions } =
+                  currentPositions;
 
-              return newPositions;
-            })
-          );
-        } else {
-          await updateFolder(directory, renamedPath, path);
+                if (iconPosition) {
+                  newPositions[renamedPath] = iconPosition;
+                }
+
+                return newPositions;
+              })
+            );
+          } else {
+            await updateFolder(directory, renamedPath, path);
+          }
         }
       }
-    }
-  };
+    },
+    [directory, exists, isDesktop, rename, setIconPositions, updateFolder]
+  );
   const newPath = useCallback(
     async (
       name: string,
@@ -478,21 +497,21 @@ const useFolder = (
         );
       }
     },
-    [createZipFile]
+    [createLink, createZipFile]
   );
   const { openTransferDialog } = useTransferDialog();
   const extractFiles = useCallback(
     async (path: string): Promise<void> => {
-      const data = await readFile(path);
-      const { unarchive, unzip } = await import("utils/zipFunctions");
+      openTransferDialog(undefined, path, "Extracting");
+
       const closeDialog = (): void =>
         close(`Transfer${PROCESS_DELIMITER}${path}`);
 
-      openTransferDialog(undefined, path);
-
       try {
+        const { unarchive, unzip } = await import("utils/zipFunctions");
+        const data = await readFile(path);
         const unzippedFiles = Object.entries(
-          [".jsdos", ".wsz", ".zip"].includes(getExtension(path))
+          ZIP_EXTENSIONS.has(getExtension(path))
             ? await unzip(data)
             : await unarchive(path, data)
         );
@@ -576,27 +595,37 @@ const useFolder = (
       const moving = pasteEntries.some(([, operation]) => operation === "move");
       const copyFiles = async (entry: string, basePath = ""): Promise<void> => {
         const newBasePath = join(basePath, basename(entry));
-        let uniquePath: string;
+        let uniquePath = "";
 
-        if ((await lstat(entry)).isDirectory()) {
-          uniquePath = await createPath(newBasePath, directory);
+        try {
+          if ((await lstat(entry)).isDirectory()) {
+            uniquePath = await createPath(newBasePath, directory);
 
-          await Promise.all(
-            (await readdir(entry)).map((dirEntry) =>
-              copyFiles(join(entry, dirEntry), uniquePath)
-            )
-          );
-        } else {
-          uniquePath = await createPath(
-            newBasePath,
-            directory,
-            await readFile(entry)
-          );
+            await Promise.all(
+              (await readdir(entry)).map((dirEntry) =>
+                copyFiles(join(entry, dirEntry), uniquePath)
+              )
+            );
+          } else {
+            uniquePath = await createPath(
+              newBasePath,
+              directory,
+              await readFile(entry)
+            );
+          }
+        } catch (error) {
+          const { code, path } = error as ApiError;
+
+          if (path && code === "ENOENT") {
+            setPasteList(
+              ({ [path]: _missingFile, ...currentPasteList }) =>
+                currentPasteList
+            );
+          }
         }
 
-        if (!basePath) updateFolder(directory, uniquePath);
+        if (uniquePath && !basePath) updateFolder(directory, uniquePath);
       };
-      const movedPaths: string[] = [];
       const objectReaders = pasteEntries.map<ObjectReader>(([pasteEntry]) => {
         let aborted = false;
 
@@ -606,13 +635,7 @@ const useFolder = (
           },
           directory,
           done: () => {
-            if (moving) {
-              movedPaths
-                .filter(Boolean)
-                .forEach((movedPath) => updateFolder(directory, movedPath));
-
-              copyEntries([]);
-            }
+            if (moving) copyEntries([]);
           },
           name: pasteEntry,
           operation: moving ? "Moving" : "Copying",
@@ -620,7 +643,7 @@ const useFolder = (
             if (aborted) return;
 
             if (moving) {
-              movedPaths.push(await createPath(pasteEntry, directory));
+              updateFolder(directory, await createPath(pasteEntry, directory));
             } else await copyFiles(pasteEntry);
           },
         };
@@ -632,16 +655,30 @@ const useFolder = (
             ? event.nativeEvent.touches[0]
             : (event.nativeEvent as MouseEvent);
 
-        updateIconPositions(
-          directory,
-          event.target as HTMLElement,
-          iconPositions,
-          sortOrders,
-          { x, y },
+        getIteratedNames(
           pasteEntries.map(([entry]) => basename(entry)),
-          setIconPositions,
+          directory,
+          iconPositions,
           exists
+        ).then((entries) =>
+          updateIconPositions(
+            directory,
+            event.target as HTMLElement,
+            iconPositions,
+            sortOrders,
+            { x, y },
+            entries,
+            setIconPositions,
+            exists
+          )
         );
+      }
+
+      if (
+        moving &&
+        pasteEntries.some(([entry]) => dirname(entry) === DESKTOP_PATH)
+      ) {
+        saveUnpositionedDesktopIcons(setIconPositions);
       }
 
       openTransferDialog(objectReaders);
@@ -658,6 +695,7 @@ const useFolder = (
       readFile,
       readdir,
       setIconPositions,
+      setPasteList,
       sortOrders,
       updateFolder,
     ]

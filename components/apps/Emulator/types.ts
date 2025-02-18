@@ -3,9 +3,23 @@ export type Emulator = {
     buttons: {
       saveState?: HTMLButtonElement;
     };
+    container: HTMLDivElement;
   };
   loadState?: (state: Buffer) => void;
 };
+
+export type OnSaveState = (event: {
+  screenshot: Uint8Array;
+  state: Uint8Array;
+}) => void;
+
+export type OnGameStart = (
+  event: Event & {
+    detail: {
+      emulator: Emulator;
+    };
+  }
+) => void;
 
 declare global {
   interface Window {
@@ -34,17 +48,8 @@ declare global {
     };
     EJS_gameName?: string;
     EJS_gameUrl?: string;
-    EJS_onGameStart?: (
-      event: Event & {
-        detail: {
-          emulator: Emulator;
-        };
-      }
-    ) => void;
-    EJS_onSaveState?: (event: {
-      screenshot: Uint8Array;
-      state: Uint8Array;
-    }) => void;
+    EJS_onGameStart?: OnGameStart;
+    EJS_onSaveState?: OnSaveState;
     EJS_pathtodata?: string;
     EJS_player?: string;
     EJS_startOnLoaded?: boolean;
