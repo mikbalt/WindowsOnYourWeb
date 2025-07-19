@@ -1,6 +1,18 @@
-## 🌌 **Taqyudin's Portfolio** 🌌
+# Web Desktop Environment
 
-## _Web Portfolio - Desktop environment in the browser_
+_Modern desktop environment running entirely in the browser_
+
+A fully functional operating system experience built with Next.js, React, and TypeScript. Features include file management, applications, games, and a complete terminal with custom commands.
+
+## 🚀 **Tech Stack**
+
+- **Framework**: Next.js 15 with React 19
+- **Language**: TypeScript
+- **Styling**: Styled Components
+- **File System**: BrowserFS with IndexedDB storage
+- **Terminal**: xterm.js with custom command interpreter
+- **Emulation**: WebAssembly for DOS/Windows apps
+- **Build**: Webpack with custom optimizations
 
 ![Screenshot](public/screenshot.png)
 
@@ -8,7 +20,7 @@
 
 [![Feature Overview](https://img.youtube.com/vi/djCqHH0SCmA/mqdefault.jpg)](http://www.youtube.com/watch?v=djCqHH0SCmA)
 
-# System 🧠
+## 🖥️ **Core Features**
 
 ### [File System](https://github.com/jvilk/BrowserFS)
 
@@ -92,7 +104,7 @@
     - `/?url=/CREDITS.md`
     - `/?app=Browser`
 
-# Apps 🧪
+## 📱 **Applications**
 
 ### [BoxedWine](http://www.boxedwine.org/) (**_.exe, .zip_**)
 
@@ -220,7 +232,7 @@
 - Playlist & streaming support
 - Visualization support (["Milkdrop"](https://github.com/jberg/butterchurn))
 
-# Games 🎮
+## 🎮 **Games**
 
 ### [ClassiCube](https://www.classicube.net/)
 
@@ -238,7 +250,7 @@
 
 - Port of the classic first-person shooter
 
-# Try It 🚀
+## 🚀 **Getting Started**
 
 ##### Requirements
 
@@ -264,8 +276,8 @@ yarn serve
 ##### Docker
 
 ```
-docker build -t taqyudin-portfolio .
-docker run -dp 3000:3000 --rm --name taqyudin-portfolio taqyudin-portfolio
+docker build -t web-desktop .
+docker run -dp 3000:3000 --rm --name web-desktop web-desktop
 ```
 
 ##### Notes
