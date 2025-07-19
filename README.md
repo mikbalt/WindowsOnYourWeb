@@ -14,11 +14,7 @@ A fully functional operating system experience built with Next.js, React, and Ty
 - **Emulation**: WebAssembly for DOS/Windows apps
 - **Build**: Webpack with custom optimizations
 
-![Screenshot](public/screenshot.png)
-
 ### Feature Overview
-
-[![Feature Overview]
 
 ## 🖥️ **Core Features**
 
