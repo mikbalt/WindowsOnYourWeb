@@ -18,7 +18,7 @@ A fully functional operating system experience built with Next.js, React, and Ty
 
 ### Feature Overview
 
-[![Feature Overview](https://img.youtube.com/vi/djCqHH0SCmA/mqdefault.jpg)](http://www.youtube.com/watch?v=djCqHH0SCmA)
+[![Feature Overview]
 
 ## 🖥️ **Core Features**
 
