@@ -26,7 +26,7 @@ export const help = (
 };
 
 export const commands: Record<string, string> = {
-  about: "Learn more about Taqyudin.",
+  about: "Learn more about Ikbal Taqyudin.",
   cd: "Changes the current directory.",
   clear: "Clears the screen.",
   color: "Specifies color attribute of console output.",
@@ -43,7 +43,7 @@ export const commands: Record<string, string> = {
   find: "Searches for a text string in a file or files.",
   git: "Read from git repositories.",
   help: "Provides Help information for commands.",
-  "hire-me": "Why you should hire Taqyudin.",
+  "hire-me": "Why you should hire Ikbal Taqyudin.",
   history: "Displays command history list.",
   imagemagick: "Convert an image file to another format.",
   ipconfig: "Displays current IP.",
@@ -62,11 +62,11 @@ export const commands: Record<string, string> = {
   ren: "Renames a file or directory.",
   resume: "Open resume/CV document.",
   rm: "Removes a file or directory.",
-  services: "List available services and pricing.",
+  services: "List available services and collaboration opportunities.",
   sheep: "Spawn a new sheep.",
   shutdown: "Allows proper local shutdown of machine.",
-  skills: "Display technical skills and expertise.",
-  taqyudin: "Interactive portfolio assistant.",
+  skills: "Display technical skills and expertise (iOS, DevOps, QA).",
+  taqyudin: "Interactive portfolio assistant for Ikbal Taqyudin.",
   taskkill: "Kill or stop a running process or application.",
   tasklist: "Displays all currently running processes.",
   time: "Displays the system time.",
