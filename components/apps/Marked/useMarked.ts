@@ -72,9 +72,14 @@ const useMarked = ({
   useEffect(() => {
     if (loading) {
       loadFiles(libs).then(() => {
-        if (window.marked) {
-          setLoading(false);
-        }
+        const checkMarked = () => {
+          if (window.marked && window.DOMPurify) {
+            setLoading(false);
+          } else {
+            setTimeout(checkMarked, 10);
+          }
+        };
+        checkMarked();
       });
     }
   }, [libs, loading, setLoading]);
