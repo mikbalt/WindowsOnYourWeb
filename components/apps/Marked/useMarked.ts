@@ -72,7 +72,7 @@ const useMarked = ({
   useEffect(() => {
     if (loading) {
       loadFiles(libs).then(() => {
-        const checkMarked = () => {
+        const checkMarked = (): void => {
           if (window.marked && window.DOMPurify) {
             setLoading(false);
           } else {
