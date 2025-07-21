@@ -40,6 +40,10 @@ const useMarked = ({
     [containerRef]
   );
   const loadFile = useCallback(async () => {
+    if (!window.marked || !window.DOMPurify) {
+      return;
+    }
+
     const markdownFile = await readFile(url);
     const container = getContainer();
 
@@ -75,6 +79,7 @@ const useMarked = ({
         const checkMarked = (): void => {
           if (window.marked && window.DOMPurify) {
             setLoading(false);
+            if (url) loadFile();
           } else {
             setTimeout(checkMarked, 10);
           }
@@ -82,7 +87,7 @@ const useMarked = ({
         checkMarked();
       });
     }
-  }, [libs, loading, setLoading]);
+  }, [libs, loading, setLoading, url, loadFile]);
 
   useEffect(() => {
     if (!loading) {
