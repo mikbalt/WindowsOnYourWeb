@@ -1,12 +1,16 @@
 import { useCallback, useRef } from "react";
 import { TRANSITIONS_IN_MILLISECONDS } from "utils/constants";
+import { hasFinePointer } from "utils/functions";
 
 const MAX_MOVES = 12;
 
 const useDoubleClick = (
   handler: React.MouseEventHandler,
   singleClick = false
-): { onClick: React.MouseEventHandler } => {
+): {
+  onClick: React.MouseEventHandler;
+  onTouchEnd?: React.TouchEventHandler;
+} => {
   const timer = useRef(0);
   const moveCount = useRef(0);
   const onClick: React.MouseEventHandler = useCallback(
@@ -40,10 +44,12 @@ const useDoubleClick = (
       if (singleClick) {
         runHandler();
       } else if (timer.current === 0) {
-        timer.current = window.setTimeout(
-          clearTimer,
-          TRANSITIONS_IN_MILLISECONDS.DOUBLE_CLICK
-        );
+        // Use longer timeout for mobile/touch devices
+        const doubleClickTimeout = hasFinePointer()
+          ? TRANSITIONS_IN_MILLISECONDS.DOUBLE_CLICK
+          : TRANSITIONS_IN_MILLISECONDS.DOUBLE_CLICK * 1.5;
+
+        timer.current = window.setTimeout(clearTimer, doubleClickTimeout);
         event.target.addEventListener("pointermove", clearWhenPointerMoved, {
           passive: true,
         });
@@ -55,7 +61,25 @@ const useDoubleClick = (
     [handler, singleClick]
   );
 
-  return { onClick };
+  // Touch event handler for mobile devices
+  const onTouchEnd: React.TouchEventHandler = useCallback(
+    (event) => {
+      // Convert touch event to mouse-like event for consistency
+      const syntheticEvent = {
+        ...event,
+        stopPropagation: event.stopPropagation.bind(event),
+        target: event.target,
+      } as unknown as React.MouseEvent;
+
+      onClick(syntheticEvent);
+    },
+    [onClick]
+  );
+
+  return {
+    onClick,
+    ...(!hasFinePointer() && { onTouchEnd }),
+  };
 };
 
 export default useDoubleClick;
