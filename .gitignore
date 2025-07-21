@@ -17,7 +17,8 @@ public/Users/Public/**
 
 !public/Users/**/desktop.ini
 !public/Users/Public/Desktop
-!public/Users/Public/Desktop/My PC.url
+!public/Users/Public/Desktop/My Computer.url
+!public/Users/Public/Desktop/Webamp.url
 !public/Users/Public/Desktop/Public.url
 !public/Users/Public/Desktop/AboutMe
 !public/Users/Public/Desktop/AboutMe/**
@@ -27,6 +28,7 @@ public/Users/Public/**
 !public/Users/Public/Desktop/Note/**
 !public/Users/Public/Documents
 !public/Users/Public/Music
+!public/Users/Public/Music/**
 !public/Users/Public/Pictures
 !public/Users/Public/Pictures/prompts.json
 !public/Users/Public/Pictures/slideshow.json
