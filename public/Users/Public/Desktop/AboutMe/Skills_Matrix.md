@@ -2,87 +2,67 @@
 
 ## Technical Skills
 
-### Frontend Development
-- **React.js** ⭐⭐⭐⭐⭐ (Expert) - 3+ years, 15+ projects
-- **Next.js** ⭐⭐⭐⭐⭐ (Expert) - SSR/SSG, API routes
-- **TypeScript** ⭐⭐⭐⭐⭐ (Expert) - Type-safe development
-- **Vue.js** ⭐⭐⭐⭐ (Advanced) - Nuxt.js experience
-- **JavaScript ES6+** ⭐⭐⭐⭐⭐ (Expert) - Modern JS features
-- **HTML5 & CSS3** ⭐⭐⭐⭐⭐ (Expert) - Semantic, accessible markup
-- **Sass/SCSS** ⭐⭐⭐⭐ (Advanced) - Organized stylesheets
-- **Tailwind CSS** ⭐⭐⭐⭐⭐ (Expert) - Utility-first CSS
-- **Styled Components** ⭐⭐⭐⭐ (Advanced) - CSS-in-JS
-
-### Backend Development
-- **Node.js** ⭐⭐⭐⭐⭐ (Expert) - 3+ years production experience
-- **Express.js** ⭐⭐⭐⭐⭐ (Expert) - RESTful APIs, middleware
-- **Python** ⭐⭐⭐⭐ (Advanced) - Django, Flask
-- **PostgreSQL** ⭐⭐⭐⭐ (Advanced) - Database design, optimization
-- **MongoDB** ⭐⭐⭐⭐ (Advanced) - NoSQL, aggregation pipelines
-- **Redis** ⭐⭐⭐ (Intermediate) - Caching, sessions
-- **GraphQL** ⭐⭐⭐ (Intermediate) - Apollo Server/Client
+### Programming Languages
+- Java
+- Python
+- Swift
+- Kotlin
+- C#
 
 ### Mobile Development
-- **React Native** ⭐⭐⭐⭐ (Advanced) - Cross-platform apps
-- **Flutter** ⭐⭐⭐ (Intermediate) - Dart, material design
-- **PWA** ⭐⭐⭐⭐ (Advanced) - Progressive web apps
+- iOS (Swift/UIKit/StoryBoard) – Developed internal apps and PoC for financial partners (CBDC and Crypto Wallet)
+- Android (Java/Kotlin) – Production-level Android apps for EDC
+- Appium – Automated testing for mobile apps
 
-### DevOps & Tools
-- **Docker** ⭐⭐⭐⭐ (Advanced) - Containerization
-- **AWS** ⭐⭐⭐⭐ (Advanced) - EC2, S3, Lambda, RDS
-- **Vercel** ⭐⭐⭐⭐⭐ (Expert) - Deployment, edge functions
-- **Git/GitHub** ⭐⭐⭐⭐⭐ (Expert) - Version control, CI/CD
-- **Linux/Ubuntu** ⭐⭐⭐⭐ (Advanced) - Server management
-- **Nginx** ⭐⭐⭐ (Intermediate) - Reverse proxy, load balancing
+### Web & Automation Tools
+- Jenkins – CI/CD pipelines and automation
+- TestNG / JUnit – Test frameworks for applet and mobile
+- AutoIt – Internal automation tools
+- Grafana / Prometheus – Dashboards for monitoring and KPIs
 
-## Soft Skills
+### Backend & Infrastructure
+- Linux – Daily use for testing and server maintenance
+- DevOps Practices – CI/CD, delivery optimization, automation workflows
 
-### Communication
-- **Technical Writing** ⭐⭐⭐⭐⭐ - Clear documentation, proposals
-- **Client Presentation** ⭐⭐⭐⭐ - Explaining complex concepts simply
-- **Cross-functional Collaboration** ⭐⭐⭐⭐⭐ - Working with designers, PMs
-- **English Proficiency** ⭐⭐⭐⭐⭐ - Fluent (TOEFL: 950)
-- **Bahasa Indonesia** ⭐⭐⭐⭐⭐ - Native speaker
-
-### Leadership & Management
-- **Project Management** ⭐⭐⭐⭐ - Agile, Scrum methodologies
-- **Team Leadership** ⭐⭐⭐⭐ - Led 5+ developer teams
-- **Mentoring** ⭐⭐⭐⭐⭐ - Coached 10+ junior developers
-- **Strategic Planning** ⭐⭐⭐⭐ - Technical roadmap planning
-
-### Problem Solving
-- **System Architecture** ⭐⭐⭐⭐⭐ - Scalable, maintainable designs
-- **Performance Optimization** ⭐⭐⭐⭐⭐ - 40%+ speed improvements
-- **Debugging** ⭐⭐⭐⭐⭐ - Complex issue resolution
-- **Research & Learning** ⭐⭐⭐⭐⭐ - Quick technology adoption
-
-## Industry Knowledge
-
-### Business Domains
-- **E-commerce** - Payment gateways, inventory management
-- **Fintech** - Banking integrations, compliance
-- **Healthcare** - HIPAA compliance, patient management
-- **Education** - LMS platforms, content delivery
-- **SaaS** - Multi-tenancy, subscription models
-
-### Latest Technologies (2024)
-- **AI/ML Integration** ⭐⭐⭐ - OpenAI API, LangChain
-- **Web3** ⭐⭐ - Basic blockchain, smart contracts
-- **Microservices** ⭐⭐⭐⭐ - Service architecture
-- **Edge Computing** ⭐⭐⭐ - CDN optimization
+### QA, Testing & Protocols
+- EMV & ISO 8583 – Core protocol knowledge in fintech testing
+- UL Test Tools – Certification tools for financial networks
+- Keolabs Robot X6 – Robotic automation for contactless EMV testing
+- Payment Schemes – NSICCS, JCB, Visa, Mastercard, QUICK.
 
 ---
 
-## 📊 Skill Development Timeline
+## Soft Skills
 
-**2024 Goals:**
-- Master AI/ML integrations
-- Advanced AWS certifications
-- React Native performance optimization
-- System design expertise
+### Communication & Collaboration
+- Technical writing and documentation
+- Cross-functional teamwork across regions
+- Intern mentorship and coaching
+- Guest lecturer
 
-**Continuous Learning:**
-- Daily: 2 hours technical reading/practice
-- Weekly: New project experiments
-- Monthly: Technology conference/webinar
-- Quarterly: Major skill assessment & planning
+### Agile & Project Execution
+- Scrum and Kanban methodologies
+- Stakeholder alignment and QA planning
+
+---
+
+## Industry Knowledge
+
+### Business & Domains
+- Financial Technology – Digital payments, applets, EMV compliance
+- Smart Cards – HCE, FIDO, Applet verification and validation
+- Blockchain and CBDC – Wallet app development and Proof of Concept implementations
+
+---
+
+## 📊 Development Goals
+
+### Focus Areas (2025)
+- Advance iOS and Swift expertise
+- Deepen DevOps and explore DevSecOps
+- Scale up blockchain wallet product development
+- Expand knowledge sharing via writing and speaking
+
+### Continuous Learning
+- Attend webinars, tech meetups
+- Hands-on experiments with automation & pipelines

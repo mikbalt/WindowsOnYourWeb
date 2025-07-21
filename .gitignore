@@ -21,6 +21,8 @@ public/Users/Public/**
 !public/Users/Public/Desktop/Public.url
 !public/Users/Public/Desktop/AboutMe
 !public/Users/Public/Desktop/AboutMe/**
+!public/Users/Public/Desktop/aboutme
+!public/Users/Public/Desktop/aboutme/**
 !public/Users/Public/Desktop/Note
 !public/Users/Public/Desktop/Note/**
 !public/Users/Public/Documents

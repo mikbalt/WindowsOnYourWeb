@@ -1,32 +1,39 @@
-# 👋 Hi, I'm Taqyudin
+# 👋 Hi, I'm Ikbal Taqyudin
+### A Holistic Software Engineer with a Journey Across QA, Mobile, DevOps, and Blockchain
 
-## My Journey as a Full-Stack Developer
+## 🚀 My Journey in Tech
+My journey began back in **2012**, when I was just a middle school student working on a short movie project. That simple assignment sparked a deep curiosity about the **digital world**—how technology could be used to tell stories, solve problems, and create experiences.
 
-### 🚀 The Beginning
-Started my coding journey in 2020 during the pandemic. What began as curiosity about "how websites work" quickly turned into a passion that would reshape my entire career path. I remember spending countless nights learning HTML, CSS, and JavaScript - the foundation that would support everything I'd build later.
+By **late 2015**, I made a pivotal decision to pursue **Computer Engineering** at Telkom University. That decision opened the door to a rich and diverse exploration of the tech landscape—from building **Deep Learning models** for my Final Project, developing **Android applications** in EDC for my first company, venturing into **Quality Assurance** and **DevOps**, to now being fully immersed in the development of **blockchain-based wallet products**.
 
-### 💡 The Breakthrough Moment
-My first real project was a local business website for a family friend's restaurant. Seeing how my code directly impacted their business - increasing online orders by 200% in just 3 months - was the moment I realized the true power of technology to solve real-world problems.
+Rather than specializing in one narrow area, I embraced a **holistic approach**—believing that true innovation happens when we understand the bigger picture across software development, system reliability, user experience, and scalability.
 
-### 🎯 What Drives Me
-I believe great software isn't just about clean code (though that's important too!). It's about understanding the human behind the screen. Every line of code I write serves a purpose: to make someone's life easier, their business more profitable, or their workflow more efficient.
+## 💡 What Drives Me
+I believe **great software isn't just about clean code** (though that's important too!)—it's about **understanding the human behind the screen**.
 
-### 🌱 Current Focus
-Today, I specialize in building scalable web applications and mobile solutions that bridge the gap between complex technical requirements and intuitive user experiences. I'm particularly passionate about:
+Whether I'm testing systems, building mobile apps, or optimizing deployment pipelines, every decision I make is driven by one core principle:
+> **Technology should serve people.**
 
-- **Performance Optimization** - Making apps lightning fast
-- **User Experience** - Creating interfaces that just "make sense"
-- **Business Impact** - Code that drives real results
+Every line of code I write serves a purpose: to **make someone's life easier**, **their business more impactful**, or **their workflow more efficient**.
+As a holistic engineer, I constantly strive to connect the dots—between functionality and usability, between system logic and user empathy.
 
-### 🎉 Fun Facts About Me
-- ☕ Coffee enthusiast (probably drinking one right now)
-- 🎮 Built my first game at age 12 using Scratch
-- 📚 Read 24 tech books in 2023 (goal: 30 in 2024)
-- 🏃‍♂️ Marathon runner - coding marathons AND actual marathons
-- 🎸 Play guitar to debug my code (it actually works!)
+## 🔍 Current Focus
+Today, I specialize in building **scalable software solutions** that bridge the gap between **complex technical requirements** and **intuitive user experiences**.
 
-### 🤝 Let's Connect
-I'm always excited to discuss new projects, share knowledge, or just chat about the latest in tech. Whether you're looking for a developer, want to collaborate, or need advice on your next project - I'm here to help!
+I'm currently deeply focused on:
+- **iOS Development** – Crafting native apps that are performant, secure, and user-centered
+- **DevOps & DevSecOps** – Automating, securing, and optimizing delivery pipelines for reliability and speed
+- **Solution Engineering** – Helping teams and businesses translate ideas into measurable, scalable impact
 
----
-*"Code is poetry, and every developer is a poet trying to solve the world's problems one function at a time."* - Taqyudin
+Whether it’s ensuring a seamless CI/CD workflow or architecting a secure mobile feature, I’m always looking for opportunities where technology becomes **an enabler**, not just a tool.
+
+## 🎉 Fun Facts About Me
+- 🚫 Not (yet) into padel — still loyal to football and badminton 😄
+- 🎮 Only good at co-op FIFA/PES matches (seriously, don’t ask me about other games)
+- ✍️ Working on writing more — but often distracted by new ideas
+- 👨‍👧 Most of all, I love being there for my daughter — from the tiniest milestones to the biggest dreams
+
+## 🤝 Let’s Connect
+I’m always open to new collaborations, exchanging ideas, or just chatting about software, systems, and meaningful tech. Whether you're building a product, scaling a team, or just curious about DevOps or mobile—feel free to reach out!
+
+> *“Code is poetry, and every developer is a poet trying to solve the world's problems one function at a time.”* – Taqyudin
