@@ -18,6 +18,7 @@ public/Users/Public/**
 !public/Users/**/desktop.ini
 !public/Users/Public/Desktop
 !public/Users/Public/Desktop/My Computer.url
+!public/Users/Public/Desktop/Paint.url
 !public/Users/Public/Desktop/Webamp.url
 !public/Users/Public/Desktop/Public.url
 !public/Users/Public/Desktop/AboutMe
