@@ -13,7 +13,7 @@ public/robots.txt
 public/rss.xml
 public/sitemap.xml
 public/.index/*
-public/Users/Public/**
+!public/Users/Public/**
 
 !public/Users/**/desktop.ini
 !public/Users/Public/Desktop
@@ -21,10 +21,10 @@ public/Users/Public/**
 !public/Users/Public/Desktop/Paint.url
 !public/Users/Public/Desktop/Webamp.url
 !public/Users/Public/Desktop/Public.url
-!public/Users/Public/Desktop/AboutMe
-!public/Users/Public/Desktop/AboutMe/**
-!public/Users/Public/Desktop/aboutme
-!public/Users/Public/Desktop/aboutme/**
+!public/Users/Public/Desktop/About
+!public/Users/Public/Desktop/About/**
+!public/Users/Public/Desktop/about
+!public/Users/Public/Desktop/about/**
 !public/Users/Public/Desktop/Note
 !public/Users/Public/Desktop/Note/**
 !public/Users/Public/Documents
