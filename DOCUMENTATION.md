@@ -314,5 +314,5 @@ MIT License - See LICENSE file for details.
 
 - 🎨 White T logo design
 - 🖼️ Windows XP Bliss wallpaper
-- 📧 Contact: ikbaltaqyudin@gmail.com
+- 📧 Contact: ikbal@taqyudin.com
 - 🌐 Website: https://taqyudin.com

@@ -1,0 +1,34 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Windows XP Style Contact Icon -->
+  <defs>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFE0A0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFB366;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF9933;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="personGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4D90FE;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357AE8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with Windows XP style border -->
+  <rect x="1" y="1" width="30" height="30" rx="2" fill="url(#iconGradient)" stroke="#CC7A00" stroke-width="1"/>
+  <rect x="2" y="2" width="28" height="28" rx="1" fill="none" stroke="#FFE0A0" stroke-width="1"/>
+  
+  <!-- Email envelope -->
+  <rect x="5" y="12" width="22" height="16" rx="1" fill="#FFFFFF" stroke="#666666" stroke-width="1"/>
+  <rect x="6" y="13" width="20" height="14" rx="0.5" fill="#F0F0F0"/>
+  
+  <!-- Envelope flap -->
+  <path d="M6 13 L16 20 L26 13" stroke="#666666" stroke-width="1" fill="none"/>
+  <path d="M6 13 L16 19 L26 13" stroke="#CCCCCC" stroke-width="1" fill="none"/>
+  
+  <!-- Person icon -->
+  <circle cx="16" cy="8" r="3" fill="url(#personGradient)" stroke="#2D5AA0" stroke-width="1"/>
+  <path d="M11 15 Q11 12 16 12 Q21 12 21 15" fill="url(#personGradient)" stroke="#2D5AA0" stroke-width="1"/>
+  
+  <!-- Windows XP style highlight -->
+  <rect x="2" y="2" width="28" height="2" rx="1" fill="#FFFFFF" opacity="0.4"/>
+  <rect x="2" y="2" width="2" height="28" rx="1" fill="#FFFFFF" opacity="0.4"/>
+</svg>

@@ -1206,7 +1206,7 @@ const useCommandInterpreter = (
             printLn("📧 Contact Ikbal Taqyudin");
             printLn("=========================");
             printLn("");
-            printLn("📧 Email:     ikbaltaqyudin@gmail.com");
+            printLn("📧 Email:     ikbal@taqyudin.com");
             printLn("🔗 LinkedIn:  linkedin.com/in/taqyudin");
             printLn("💬 Telegram:  @ikbaltaqyudin");
             printLn("📱 WhatsApp:  Available on request");
@@ -1373,7 +1373,7 @@ const useCommandInterpreter = (
             printLn("⚠️  CV file not found in current location.");
             printLn("");
             printLn("📧 Alternative options:");
-            printLn("   1. Email: ikbaltaqyudin@gmail.com");
+            printLn("   1. Email: ikbal@taqyudin.com");
             printLn("      Subject: 'Request for CV'");
             printLn("");
             printLn("   2. LinkedIn: linkedin.com/in/taqyudin");

@@ -43,6 +43,17 @@ const directory: Processes = {
     libs: ["/Program Files/ClassiCube/ClassiCube.js"],
     title: "ClassiCube",
   },
+  Contact: {
+    Component: dynamic(() => import("components/apps/Contact")),
+    backgroundColor: "#f8f9fa",
+    defaultSize: {
+      height: 600,
+      width: 900,
+    },
+    icon: "/System/Icons/contact.webp",
+    singleton: true,
+    title: "Contact Me",
+  },
   DXBall: {
     Component: dynamic(() => import("components/apps/DX-Ball")),
     backgroundColor: "#000",

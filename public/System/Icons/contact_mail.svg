@@ -1,0 +1,34 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Windows XP Style Mail/Letter Icon -->
+  <defs>
+    <linearGradient id="paperGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F8F8F8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E8E8E8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C0C0C0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#808080;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main envelope shadow -->
+  <rect x="3" y="9" width="27" height="18" rx="1" fill="url(#shadowGradient)"/>
+  
+  <!-- Main envelope -->
+  <rect x="2" y="8" width="27" height="18" rx="1" fill="url(#paperGradient)" stroke="#808080" stroke-width="1"/>
+  
+  <!-- Envelope flap/top -->
+  <path d="M2 8 L15.5 18 L29 8" fill="none" stroke="#808080" stroke-width="1"/>
+  <path d="M2 8 L15.5 17 L29 8" fill="none" stroke="#B0B0B0" stroke-width="0.5"/>
+  
+  <!-- Inner envelope lines for classic look -->
+  <rect x="3" y="9" width="25" height="16" rx="0.5" fill="none" stroke="#D0D0D0" stroke-width="0.5"/>
+  
+  <!-- Highlight edge (Windows XP style) -->
+  <path d="M2 8 L2 25 Q2 26 3 26 L28 26 Q29 26 29 25 L29 8" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.8"/>
+  <path d="M2 8 L29 8 Q29 8 29 9" fill="none" stroke="#FFFFFF" stroke-width="0.5" opacity="0.8"/>
+  
+  <!-- Shadow edge -->
+  <path d="M3 26 L28 26 Q29 26 29 25 L29 9" fill="none" stroke="#606060" stroke-width="0.5"/>
+</svg>

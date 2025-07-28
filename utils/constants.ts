@@ -366,7 +366,7 @@ export const TASKBAR_HEIGHT = 30;
 export const PACKAGE_DATA = {
   alias: "Taqyudin",
   author: {
-    email: "ikbaltaqyudin@gmail.com",
+    email: "ikbal@taqyudin.com",
     name: "Taqyudin",
     npub: "",
     url: "https://taqyudin.com",
