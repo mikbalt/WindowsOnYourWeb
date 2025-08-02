@@ -1,4 +1,5 @@
 import { useState, type FC } from "react";
+import emailjs from "@emailjs/browser";
 import { type ComponentProcessProps } from "components/system/Apps/RenderComponent";
 import StyledContact from "components/apps/Contact/StyledContact";
 
@@ -23,40 +24,49 @@ const Contact: FC<ComponentProcessProps> = ({ id }) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
-    // Create email body
-    const emailBody = `
-Name: ${formData.name}
-Email: ${formData.email}
-Project Type: ${formData.project}
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const userId = process.env.NEXT_PUBLIC_EMAILJS_USER_ID;
 
-Project Details:
-${formData.message}
-    `.trim();
+    if (!serviceId || !templateId || !userId) {
+      // eslint-disable-next-line no-alert
+      alert("Email service not configured. Please contact administrator.");
+      return;
+    }
 
-    // Create mailto link
-    const subject = encodeURIComponent(`Project Inquiry from ${formData.name}`);
-    const body = encodeURIComponent(emailBody);
-    const mailtoLink = `mailto:ikbal@taqyudin.com?subject=${subject}&body=${body}`;
+    try {
+      const templateParams = {
+        from_email: formData.email,
+        from_name: formData.name,
+        message: formData.message,
+        project_type: formData.project,
+        to_email: "ikbal@taqyudin.com",
+        to_name: "Ikbal Taqyudin",
+      };
 
-    // Open email client
-    window.open(mailtoLink, "_blank");
+      await emailjs.send(serviceId, templateId, templateParams, userId);
 
-    // Show success message
-    setIsSubmitted(true);
+      // Show success message
+      setIsSubmitted(true);
 
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setFormData({
-        email: "",
-        message: "",
-        name: "",
-        project: "",
-      });
-      setIsSubmitted(false);
-    }, 3000);
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        setFormData({
+          email: "",
+          message: "",
+          name: "",
+          project: "",
+        });
+        setIsSubmitted(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error sending email:", error);
+      // eslint-disable-next-line no-alert
+      alert("Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.");
+    }
   };
 
   return (
@@ -161,7 +171,8 @@ ${formData.message}
                 id="message"
                 name="message"
                 onChange={handleInputChange}
-                placeholder="Tell me about your project, timeline, and any specific requirements..."
+                placeholder="Cooking up something cool?\n
+Let me know what you're building, your deadline, and the must-haves — I’m all ears (and keyboards)!"
                 value={formData.message}
                 required
               />

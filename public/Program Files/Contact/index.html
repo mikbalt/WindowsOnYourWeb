@@ -247,41 +247,62 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
+        // Initialize EmailJS
+        emailjs.init(window.EMAILJS_USER_ID || 'your_user_id');
+        
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             const data = Object.fromEntries(formData);
             
-            // Create email body
-            const emailBody = `
-Name: ${data.name}
-Email: ${data.email}
-Project Type: ${data.project}
-Budget: ${data.budget || 'Not specified'}
-
-Project Details:
-${data.message}
-            `.trim();
+            // Check if EmailJS is configured
+            const serviceId = window.EMAILJS_SERVICE_ID || 'your_service_id';
+            const templateId = window.EMAILJS_TEMPLATE_ID || 'your_template_id';
+            const userId = window.EMAILJS_USER_ID || 'your_user_id';
             
-            // Create mailto link
-            const subject = encodeURIComponent(`Project Inquiry from ${data.name}`);
-            const body = encodeURIComponent(emailBody);
-            const mailtoLink = `mailto:ikbal@taqyudin.com?subject=${subject}&body=${body}`;
+            if (serviceId === 'your_service_id' || templateId === 'your_template_id' || userId === 'your_user_id') {
+                alert('Email service not configured. Please contact administrator.');
+                return;
+            }
             
-            // Open email client
-            window.location.href = mailtoLink;
+            // Add budget to message if specified
+            const messageWithBudget = data.budget 
+                ? `Budget: ${data.budget}\n\n${data.message}`
+                : data.message;
             
-            // Show success message
-            document.getElementById('successMessage').style.display = 'block';
+            const templateParams = {
+                from_name: data.name,
+                from_email: data.email,
+                project_type: data.project,
+                message: messageWithBudget,
+                to_name: 'Ikbal Taqyudin',
+                to_email: 'ikbal@taqyudin.com'
+            };
             
-            // Reset form
-            this.reset();
-            
-            // Scroll to top
-            window.scrollTo(0, 0);
+            try {
+                await emailjs.send(serviceId, templateId, templateParams);
+                
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Reset form
+                this.reset();
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            } catch (error) {
+                console.error('Error sending email:', error);
+                alert('Terjadi kesalahan saat mengirim pesan. Silakan coba lagi.');
+            }
         });
+        
+        // Load EmailJS config from environment or fallback
+        window.EMAILJS_SERVICE_ID = window.EMAILJS_SERVICE_ID || 'your_service_id';
+        window.EMAILJS_TEMPLATE_ID = window.EMAILJS_TEMPLATE_ID || 'your_template_id';
+        window.EMAILJS_USER_ID = window.EMAILJS_USER_ID || 'your_user_id';
     </script>
 </body>
 </html>

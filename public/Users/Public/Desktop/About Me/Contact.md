@@ -28,5 +28,3 @@ Ready to bring your ideas to life? I'd love to hear from you and discuss how we 
 ---
 
 *"The best projects start with great conversations."*
-
-**Ready to start your project? Send me an email!**
